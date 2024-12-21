@@ -6,20 +6,32 @@ const userSchema = new mongoose.Schema({
     type: String,
     required: true,
     trim: true,
+    validate: {
+      validator: function (v) {
+        return /^[A-Za-z]+$/.test(v); // Only letters allowed
+      },
+      message: "First name should only contain letters (upper or lower case).",
+    },
   },
   lastName: {
     type: String,
     required: true,
     trim: true,
+    validate: {
+      validator: function (v) {
+        return /^[A-Za-z]+$/.test(v); // Only letters allowed
+      },
+      message: "Last name should only contain letters (upper or lower case).",
+    },
   },
   email: {
     type: String,
     required: true,
     unique: true,
-    lowercase: true,
+    lowercase: true, // Ensures email is stored in lowercase
     validate: {
       validator: function (v) {
-        return /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(v);
+        return /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(v); // Valid email format
       },
       message: "Please enter a valid email address.",
     },
@@ -28,13 +40,21 @@ const userSchema = new mongoose.Schema({
     type: String,
     required: true,
     minlength: 6,
+    validate: {
+      validator: function (v) {
+        // Password should contain at least one uppercase, one lowercase, and one special character
+        return /^(?=.*[a-z])(?=.*[A-Z])(?=.*\W).+$/.test(v);
+      },
+      message:
+        "Password should contain at least one uppercase letter, one lowercase letter, and one special character.",
+    },
   },
   phone: {
     type: String,
     required: true,
     validate: {
       validator: function (v) {
-        return /^\d{10}$/.test(v);
+        return /^\d{10}$/.test(v); // Validates 10-digit phone number
       },
       message: "Please enter a valid 10-digit phone number.",
     },
@@ -58,6 +78,7 @@ userSchema.pre("save", async function (next) {
   }
   next();
 });
+
 const User = mongoose.model("User", userSchema);
 
 module.exports = User;
