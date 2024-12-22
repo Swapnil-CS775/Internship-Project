@@ -1,5 +1,11 @@
 const User = require('../models/user'); // Path to your User model
 const bcrypt = require('bcrypt'); // For password comparison
+const jwt = require('jsonwebtoken'); // For generating JWT
+const cookieParser = require('cookie-parser'); // For handling cookies
+
+// Secret key for JWT (keep it secure and use environment variables in production)
+const JWT_SECRET = process.env.JWT_SECRET;
+const JWT_EXPIRES_IN = process.env.JWT_EXPIRES_IN; // Token expiration (e.g., 7 days)
 
 const loginController = async (req, res) => {
   try {
@@ -30,7 +36,22 @@ const loginController = async (req, res) => {
       return res.status(401).json({ message: 'Invalid credentials.' });
     }
 
-    // If login is successful, send a success response
+    // Generate JWT
+    const token = jwt.sign(
+      { id: user._id, email: user.email, firstName: user.firstName, lastName: user.lastName }, // Payload
+      JWT_SECRET, // Secret key
+      { expiresIn: JWT_EXPIRES_IN } // Options
+    );
+
+    // Send the token in a cookie
+    res.cookie('token', token, {
+      httpOnly: true, // Prevents access to the cookie from JavaScript (mitigates XSS attacks)
+      secure: process.env.NODE_ENV === 'production', // Only set cookie over HTTPS in production
+      sameSite: 'Strict', // Helps prevent CSRF attacks
+      maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days in milliseconds
+    });
+
+    // Send success response
     res.status(200).json({
       message: 'Login successful.',
       user: {
