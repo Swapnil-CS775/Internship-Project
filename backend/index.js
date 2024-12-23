@@ -6,6 +6,7 @@ const registerRoute = require('./routes/register'); // Path to the register rout
 const loginRoute = require("./routes/login"); // login route
 const logoutRoute = require("./routes/logout"); // logout route
 const profileRoute = require("./routes/profile"); // profile route
+const resetPasswordRoutes = require('./routes/resetPassword');
 
 const app = express();
 
@@ -24,6 +25,9 @@ app.use("/logout", logoutRoute);
 
 // Profile Route
 app.use("/profile", profileRoute);
+
+//Reset Password Route
+app.use('/password-reset', resetPasswordRoutes);
 
 // MongoDB connection
 const url = process.env.MONGODB_URI || "mongodb://localhost:27017/ecommerce"; // Use environment variable for DB URL
