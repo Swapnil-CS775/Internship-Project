@@ -70,7 +70,16 @@ const userSchema = new mongoose.Schema({
     default: Date.now,
   },
   otp: { type: String },
+
   otpExpiry: { type: Date },
+
+  role: { type: String, enum: ["user", "admin"], default: "user" },
+  
+  cartId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Cart',  // Reference to the Cart model
+    default: null,  // Initially empty
+  },
 });
 
 // Pre-save middleware to hash the password

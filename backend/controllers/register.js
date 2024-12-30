@@ -1,4 +1,5 @@
 const User = require('../models/user'); // Path to the User model
+const Cart = require('../models/cart');
 const jwt = require('jsonwebtoken'); // For generating JWT
 
 // Secret key for JWT (use environment variables for security)
@@ -26,6 +27,15 @@ async function registerController(req, res) {
             return res.status(400).json({ message: 'Phone number is already registered.' });
         }
 
+        // Create new cart for the user
+        const cart = new Cart({
+            items: [],
+            totalPrice: 0,
+        });
+  
+        // Save the cart
+        await cart.save();
+
         // Create a new user instance
         const newUser = new User({
             firstName,
@@ -34,6 +44,7 @@ async function registerController(req, res) {
             password, // Password will be hashed by the pre-save middleware
             phone,
             address,
+            cartId: cart._id,  // Store cartId in the user model
         });
 
         // Save the new user to the database
@@ -65,6 +76,7 @@ async function registerController(req, res) {
                 phone: savedUser.phone,
             },
         });
+
 
     } catch (error) {
         // Handle validation errors
