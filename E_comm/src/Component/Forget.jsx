@@ -1,7 +1,9 @@
 import React from 'react'
 import { useForm } from 'react-hook-form'
+import { useNavigate } from 'react-router-dom'
 
 const Forget = () => {
+  const navigate = useNavigate();
     const {
             register,
             handleSubmit,
@@ -11,22 +13,45 @@ const Forget = () => {
     
           const onSubmit = (data)=>{
             console.log("Printing the data : ", data);
+            navigate('OTP');
+
           }
   return (
-    <div>
-    <div className='flex items-center justify-center w-full'>
-      <div className='w-1/3 border-2 bg-green-200 mt-4 rounded-lg'>
-        <form action="" onSubmit={handleSubmit(onSubmit)} className='m-6 flex flex-col justify-center items-center flex-wrap'>
-          {errors.username && <div>"something error"</div>}
-          <input {...register("username", { required: true, maxLength: 20 })} className='w-1/2 m-2 border-2 p-1 rounded-lg ' type="text" placeholder='Username'/>
-          {errors.password && <div className='text-red-500 text-sm'>{errors.password.message}</div>}
-          <input type="text" {...register("OTP", { required:{value:true, message:"This feild is required*"}, minLength:{value:5,message:"Min lenght is 5*"}})} placeholder='OTP' className='w-1/2 m-2 border-2 p-1 rounded-lg '/>
-          <input type="submit" value="Submit" className='block hover:cursor-pointer p-2 rounded-lg bg-green-400 my-2'/>
+  <>
+  <div className=" mt-10 flex items-center justify-center">
+      <div className="bg-white p-8 rounded-lg shadow-lg w-full max-w-sm">
+        <h2 className="text-2xl font-bold text-center mb-4">Forget Password</h2>
+        <form onSubmit={handleSubmit(onSubmit)}>
+          <div className="mb-4">
+            <label htmlFor="email" className="block text-gray-700 text-sm font-medium">Email</label>
+            <input
+              type="email"
+              id="email"
+              {...register('email', { 
+                required: 'Email is required',
+                pattern: {
+                  value: /^\S+@\S+$/i,
+                  message: 'Invalid email address'
+                }
+              })}
+              placeholder="Enter your email"
+              className="mt-1 w-full px-4 py-2 border-2 rounded-lg  focus:border-2"
+            />
+            {errors.email && <p className="text-red-500 text-sm mt-1">{errors.email.message}</p>}
+          </div>
+          <div className='flex justify-center items-center'>
+          <button
+            type="submit"
+            className="px-6 bg-indigo-600 text-white py-2 rounded-lg hover:bg-indigo-700"
+          >
+            Submit
+          </button>
+          </div>
+          
         </form>
       </div>
     </div>
-
-  </div>
+  </>
   )
 }
 
