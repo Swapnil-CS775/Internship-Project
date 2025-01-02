@@ -1,6 +1,16 @@
-import React from 'react'
+import React, { useRef, useState, useEffect }  from 'react'
 import { Link } from 'react-router-dom'
+
 const Navbar = () => {
+  const inpRef = useRef(null);
+  const [toggle, setToggle] = useState(false);
+  const [searchValue, setSearchValue] = useState('');
+
+  // Handle clicks outside the search box
+  const handleSuggestionClick = (value) => {
+    setSearchValue(value); // Update input value
+    setToggle(false); // Hide suggestions after selecting
+  }
     return (
         <>
         <div className="bg-white shadow-md py-4 mb-3">
@@ -18,11 +28,50 @@ const Navbar = () => {
             <option value="Laptop">Laptop</option>
             <option value="Headphones">Headphones</option>
           </select>
-          <input
-            type="text"
-            placeholder="Search for products"
-            className="border-t border-b border-gray-300 p-2 w-full"
-          />
+          <div className="w-full relative">
+      {/* Input Field */}
+      <input
+        ref={inpRef}
+        type="text"
+        value={searchValue}
+        onChange={(e) => setSearchValue(e.target.value)}
+        onClick={() => setToggle(!toggle)} // Toggle suggestions when clicking on input
+        placeholder="Search for products"
+        className="border-t border-b border-gray-300 p-2 w-full"
+      />
+
+      {/* Suggestions */}
+      {toggle && (
+        <div  onBlur={()=>{setToggle(false)}} className="bg-white absolute z-10 rounded-lg border-t border-b border-gray-300 px-5 max-h-64 overflow-y-auto w-96">
+          <ul className="w-full">
+            <li
+              onClick={() => handleSuggestionClick('Option')}
+              className="p-1 hover:cursor-pointer hover:bg-gray-100"
+            >
+              Option 1
+            </li>
+            <li
+              onClick={() => handleSuggestionClick('Option 2')}
+              className="p-1 hover:cursor-pointer hover:bg-gray-100"
+            >
+              Option 2
+            </li>
+            <li
+              onClick={() => handleSuggestionClick('Option 3')}
+              className="p-1 hover:cursor-pointer hover:bg-gray-100"
+            >
+              Option 3
+            </li>
+            <li
+              onClick={() => handleSuggestionClick('Option 4')}
+              className="p-1 hover:cursor-pointer hover:bg-gray-100"
+            >
+              Option 4
+            </li>
+          </ul>
+        </div>
+      )}
+    </div>
           <button className="bg-blue-600 text-white p-2 rounded-r-lg border-2">SEARCH</button>
         </div>
 

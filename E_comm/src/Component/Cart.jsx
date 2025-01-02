@@ -39,7 +39,7 @@ const Cart = () => {
           </div>
         </div>
         <div className="border-b border-gray-300 py-4">
-          {products.length === 1 && (
+          {products.length === 1 || products.length === 0 && (
             <span className="text-center font-bold block text-xl">Cart is Empty</span>
           )}
           {products.map((product) => (
@@ -79,7 +79,7 @@ const Cart = () => {
                       ).toFixed(2)}
                     </span>
                     <button className="bg-blue-600 px-4 py-2 m-2 rounded-lg shadow hover:bg-blue-700 text-white">
-                      <Link to = {'/cart/payment'}> Buy</Link>
+                      <Link to = {'/cart/payment'} state={product}> Buy</Link>
                      
                     </button>
                     <button
