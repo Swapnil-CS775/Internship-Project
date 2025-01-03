@@ -19,7 +19,7 @@ const productSchema = new mongoose.Schema({
   category: {
     type: String,
     required: true,
-    enum: ["Resistor", "Capacitor", "Transistor", "Diode", "IC", "Other"], // You can define more categories based on your site
+    // enum: ["Resistor", "Capacitor", "Transistor", "Diode", "IC", "Other"], // You can define more categories based on your site
   },
   brand: {
     type: String,

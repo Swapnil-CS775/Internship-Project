@@ -38,18 +38,20 @@ const loginController = async (req, res) => {
 
     // Generate JWT
     const token = jwt.sign(
-      { id: user._id, email: user.email, firstName: user.firstName, lastName: user.lastName }, // Payload
+      { id: user._id}, // Payload
       JWT_SECRET, // Secret key
       { expiresIn: JWT_EXPIRES_IN } // Options
     );
-
+    console.log("token created successfully :",token);
     // Send the token in a cookie
     res.cookie('token', token, {
       httpOnly: true, // Prevents access to the cookie from JavaScript (mitigates XSS attacks)
-      secure: process.env.NODE_ENV === 'production', // Only set cookie over HTTPS in production
-      sameSite: 'Strict', // Helps prevent CSRF attacks
+      secure: 'false',//process.env.NODE_ENV === 'production', // Only set cookie over HTTPS in production
+      sameSite: 'None', // Helps prevent CSRF attacks
       maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days in milliseconds
     });
+
+    console.log("cookies send successfully");
 
     // Send success response
     res.status(200).json({
@@ -60,8 +62,10 @@ const loginController = async (req, res) => {
         lastName: user.lastName,
         email: user.email,
         phone: user.phone,
+        address:user.address,
       },
     });
+    console.log("response send success");
   } catch (error) {
     console.error('Error during login:', error);
     res.status(500).json({ message: 'Internal server error.' });

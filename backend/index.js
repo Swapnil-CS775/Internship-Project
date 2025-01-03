@@ -1,3 +1,4 @@
+const cors=require("cors");
 require('dotenv').config();
 const express = require("express");
 const cookieParser = require('cookie-parser');
@@ -8,12 +9,18 @@ const logoutRoute = require("./routes/logout"); // logout route
 const userRoute = require("./routes/user"); // user route
 const resetPasswordRoutes = require('./routes/resetPassword');
 const adminRoutes = require('./routes/admin');
-
+const displayProduct=require("./routes/displayProduct");
 const app = express();
+const path = require('path');
 
 // Middleware
+app.use(cors({
+  origin: "http://localhost:5173", // Frontend origin
+  credentials: true, // Allow cookies to be sent
+}));
 app.use(cookieParser());
 app.use(express.json()); // Use express built-in JSON parser instead of body-parser
+app.use('/public', express.static(path.join(__dirname, 'public')));
 
 // Register Routes
 app.use('/register', registerRoute); // Access via /register
@@ -32,6 +39,9 @@ app.use('/password-reset', resetPasswordRoutes);
 
 //Admin Route
 app.use('/admin',adminRoutes);
+
+//Display Products
+app.use("/product",displayProduct);
 
 // MongoDB connection
 const url = process.env.MONGODB_URI || "mongodb://localhost:27017/ecommerce"; // Use environment variable for DB URL

@@ -62,6 +62,7 @@ exports.verifyOTP = async (req, res) => {
 
     if (!user) return res.status(404).json({ message: 'User not found' });
     if (user.otp !== otp || user.otpExpiry < Date.now()) {
+      console.log("Invalid or expired OTP");
       return res.status(400).json({ message: 'Invalid or expired OTP' });
     }
 

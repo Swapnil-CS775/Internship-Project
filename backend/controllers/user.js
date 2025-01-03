@@ -28,14 +28,24 @@ const userController = async (req, res) => {
 
 const cartController = async (req, res) => {
   try {
-    // Find the user by ID and populate the cartId field
-    const user = await User.findById(req.user.id).populate("cartId");
+    // Find the user by ID and populate their cart
+    console.log("Request arrived at backend server from middleware")
+    const user = await User.findById(req.user.id).populate({
+      path: "cartId", //The cartId field in the User model will be replaced with the entire Cart object.
+      populate: {
+        path: "items.productId", // Populate the product details
+        model: "Product",
+      },
+    });
 
-    if (!user) {
-      return res.status(404).json({ message: "User not found" });
+    if (!user || !user.cartId) {
+      return res.status(404).json({ message: "Cart not found for this user" });
     }
 
-    // Return the user's cart
+    // Ensure the total price is updated
+    await user.cartId.updateTotalPrice();
+
+    // Send the cart data to the frontend
     res.status(200).json({
       message: "Cart fetched successfully",
       cart: user.cartId,
@@ -46,11 +56,14 @@ const cartController = async (req, res) => {
   }
 };
 
+
 //Function  to add items in cart
 const addToCart = async (req, res) => {
   try {
+      console.log("request come for adding product in cart");
       const { productId, quantity } = req.body;
       const parsedQuantity = parseInt(quantity, 10); // Convert to a number
+      console.log(productId);
     
       if (isNaN(parsedQuantity) || parsedQuantity <= 0) {
           return res.status(400).json({ message: 'Quantity must be a positive number' });
@@ -133,6 +146,7 @@ const removeFromCart = async (req, res) => {
 
 const updateCartQuantity = async (req, res) => {
   try {
+    console.log("request come for update qty");
     const { productId, action } = req.body; // Get productId and action (increase/decrease) from the request body
     const userId = req.user.id; // Assume `req.user.id` is set by the authentication middleware
 

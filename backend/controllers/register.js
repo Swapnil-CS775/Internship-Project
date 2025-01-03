@@ -52,7 +52,7 @@ async function registerController(req, res) {
 
         // Generate JWT token
         const token = jwt.sign(
-            { id: savedUser._id, email: savedUser.email, firstName: savedUser.firstName, lastName: savedUser.lastName },
+            { id: savedUser._id},
             JWT_SECRET,
             { expiresIn: JWT_EXPIRES_IN }
         );
@@ -74,6 +74,7 @@ async function registerController(req, res) {
                 lastName: savedUser.lastName,
                 email: savedUser.email,
                 phone: savedUser.phone,
+                address:savedUser.address,
             },
         });
 
