@@ -12,6 +12,9 @@ import Cart from './Component/Cart'
 import Payment from './Component/Payment'
 import OTP from './Component/OTP'
 import Reset from './Component/Reset'
+import Admin from './Component/Admin'
+import UpdateforAdmin from './Component/UpdateforAdmin'
+import Update_product from './Component/Update_product'
 
 function App() {
   const router = createBrowserRouter([
@@ -52,6 +55,18 @@ function App() {
       path : '/login/forget-password/OTP/set-password',
       element : <><Navbar/> <Reset/></>
     },
+    {
+      path : '/admin',
+      element : <><Navbar/><Admin/></>
+    },
+    {
+      path: '/admin/update-delete',
+      element : <><Navbar/><UpdateforAdmin/></>
+    },
+    {
+      path: '/admin/update-delete/update-product',
+      element : <><Navbar/><Update_product/></>
+    }
   ])
   return (
     <>

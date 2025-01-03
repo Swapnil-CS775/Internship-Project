@@ -192,7 +192,7 @@ theme="light"
                   Add to cart
                 </button>
                 <button className="mt-4 ml-8 w-3/4 bg-blue-500 text-white py-2 rounded hover:bg-blue-700">
-                  Buy Now
+                 <Link to = {'/cart/payment'} state={product}> Buy Now </Link>
                 </button>
                 </div>
               </div>
