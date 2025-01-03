@@ -11,20 +11,55 @@ const Register = () => {
         reset,
       } = useForm()
 
-      const onSubmit = (data)=>{
-        console.log("Printing the data : ", data);
-        reset();
-        toast("User Registered Successfully..", {
-          position: "top-right",
-          autoClose: 5000,
-          hideProgressBar: false,
-          closeOnClick: false,
-          pauseOnHover: true,
-          draggable: true,
-          progress: undefined,
-          theme: "light",
+      const onSubmit = async (data) => {
+        try {
+            const response = await fetch('http://localhost:3000/register', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(data),
           });
-      }
+      
+          if (response.ok) {
+            const result = await response.json();
+            console.log("Server response: ", result);
+            reset(); // Reset the form
+            toast.success("User Registered Successfully!", {
+              position: "top-right",
+              autoClose: 5000,
+              hideProgressBar: false,
+              closeOnClick: true,
+              pauseOnHover: true,
+              draggable: true,
+              theme: "light",
+            });
+          } else {
+            const error = await response.json();
+            console.error("Server error: ", error);
+            toast.error(`Registration failed: ${error.message}`, {
+              position: "top-right",
+              autoClose: 5000,
+              hideProgressBar: false,
+              closeOnClick: true,
+              pauseOnHover: true,
+              draggable: true,
+              theme: "light",
+            });
+          }
+        } catch (error) {
+          console.error("Error during registration: ", error);
+          toast.error("Something went wrong. Please try again.", {
+            position: "top-right",
+            autoClose: 5000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            theme: "light",
+          });
+        }
+      };
   return (
     <div>
 

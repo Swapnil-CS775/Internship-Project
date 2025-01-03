@@ -11,10 +11,30 @@ const Forget = () => {
             formState: { errors },
           } = useForm()
     
-          const onSubmit = (data)=>{
+          const onSubmit =async (data)=>{
             console.log("Printing the data : ", data);
-            navigate('OTP');
+            // Making the request to the backend
+            try {
+                const response = await fetch('http://localhost:3000/password-reset/request-otp', {
+                  method: 'POST', // or 'GET' depending on your backend route
+                  headers: {
+                    'Content-Type': 'application/json',
+                  },
+                body: JSON.stringify(data), // Send the data as JSON
+              });
 
+              if (response.ok) {
+                // If the response is successful, navigate to OTP page
+                const responseData = await response.json();  // Parse the response
+                console.log('Message from backend :', responseData);
+                navigate('OTP',{ state: { email: data.email } });
+              } else {
+              // Handle the error if the request fails
+              console.error('Error sending OTP request:', response.statusText);
+            }
+            } catch (error) {
+              console.error('Error making request:', error);
+            }
           }
   return (
   <>

@@ -1,9 +1,12 @@
 import React from 'react'
 import { useForm } from 'react-hook-form'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate,useLocation } from 'react-router-dom'
 
 const Reset = () => {
     const navigate = useNavigate();
+    const location = useLocation();
+    const email = location.state?.email;  // Retrieve the email passed from the previous page
+
     const {
         register,
         handleSubmit,
@@ -11,10 +14,38 @@ const Reset = () => {
         formState: { errors },
     } = useForm();
 
-    const onSubmit = (data) => {
-        console.log('New password submitted:', data);
-        navigate('/login');
-    };
+    const onSubmit = async (data) => {
+        const { newPassword, confirmPassword } = data;  // Extract the new and confirmed password from form data
+      
+        const requestData = {
+          email: email,
+          newPassword: newPassword,
+          confirmPassword: confirmPassword,
+        };
+      
+        try {
+          const response = await fetch('http://localhost:3000/password-reset/reset-password', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(requestData),
+          });
+      
+          if (response.ok) {
+            const responseData = await response.json();  // Parse the response from backend
+            console.log('Message from backend', responseData);  // Log the success response
+            navigate('/login');  // Navigate to the login page
+          } else {
+            const errorData = await response.json();  // Parse error response from backend
+            console.error('Error updating password:', errorData.message);
+            alert(`Error: ${errorData.message}`);  // Display error message to the user
+          }
+        } catch (error) {
+          console.error('Error making the request:', error);
+          alert('An unexpected error occurred. Please try again.');
+        }
+      };
     return (
         <>
             <div className="mt-10 flex items-center justify-center">

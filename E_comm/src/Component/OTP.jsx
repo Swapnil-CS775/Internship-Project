@@ -1,9 +1,13 @@
 import React from 'react'
 import { useForm } from 'react-hook-form'
-import { useNavigate } from 'react-router-dom';
+import { useNavigate,useLocation } from 'react-router-dom';
+
 
 const OTP = () => {
     const navigate = useNavigate();
+    const location = useLocation();
+    const email = location.state?.email;  // Retrieve the email passed from the previous page
+
     const {
             register,
             handleSubmit,
@@ -11,9 +15,35 @@ const OTP = () => {
             formState: { errors },
           } = useForm();
 
-          const onSubmit = (data) => {
+          const onSubmit =async (data) => {
             console.log('OTP submitted:', data.otp);
-            navigate('set-password');
+            console.log('OTP submitted:', data.otp);
+            console.log('Email:', email);
+
+            const requestData = {
+              email: email,  // Now you have the email from the previous page
+              otp: data.otp,
+            };
+            try {
+              const response = await fetch('http://localhost:3000/password-reset/verify-otp', {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(requestData),
+              });
+          
+              if (response.ok) {
+                const responseData = await response.json();  // Parse the response
+                console.log('Message form backend:', responseData);
+                navigate('set-password',{ state: { email} });
+              } else {
+                const errorData = await response.json();
+                console.error('Error verifying OTP:', errorData.message);
+              }
+            } catch (error) {
+              console.error('Error making the request:', error);
+            }
           };        
 
   return (

@@ -14,13 +14,32 @@ const Login = () => {
     reset,
   } = useForm()
 
-  const onSubmit = (data) => {
-    console.log("Printing the form data", data);
-    reset();
-    toast("Login Succesful", { autoClose: 2000 });
-    setTimeout(() => {
-      navigate('/');
-    }, 2000);
+  const onSubmit =async (data) => {
+    try {
+      // Make the POST request to your backend API
+      const response = await fetch('http://localhost:3000/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include', // Include cookies
+        body: JSON.stringify(data),
+      });
+
+      // If login is successful, show a success message and redirect
+      if (response.status === 200) {
+        // Log the entire response for debugging purposes
+        const responseData = await response.json();
+        console.log("Response from backend:", responseData); // Log the response
+        toast("Login Successful", { autoClose: 2000 });
+        setTimeout(() => {
+          navigate('/');
+        }, 2000);
+      }
+    } catch (error) {
+      // Handle errors (like invalid credentials)
+      toast.error("Login Failed! Please try again.", { autoClose: 2000 });
+    } 
   }
 
   return (

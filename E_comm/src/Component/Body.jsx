@@ -1,8 +1,9 @@
-import React, { useState, useRef } from 'react'
+import React, { useState, useRef,useEffect } from 'react'
 import { useDispatch } from 'react-redux';
 import { addProduct } from '../redux/product/productSlice';
-import { Link } from 'react-router-dom';
+import { data, Link } from 'react-router-dom';
 import { ToastContainer, toast } from 'react-toastify';
+
 
 const Body = () => {
   const dispatch = useDispatch()
@@ -18,75 +19,83 @@ const Body = () => {
     { name: 'Games', icon: '🎮' },
   ];
 
-  const products = [
-    {
-      id: 1,
-      name: "Laptop 14” 8-core CPU, M2 2022, 8GB | 256GB, New",
-      image: "https://demo.theme-sky.com/ecomall/wp-content/uploads/2023/03/04-400x400.jpg",
-      price: "$1,359.00",
-      oldPrice: "$1,584.00",
-      discount: "-14%",
-      rating: "⭐⭐⭐⭐⭐",
-    },
-    {
-      id: 2,
-      name: "MacBook Pro 13.3” 16GB/512GB Silver",
-      image: "https://demo.theme-sky.com/ecomall/wp-content/uploads/2023/03/04-400x400.jpg",
-      price: "$1,527.00",
-      oldPrice: "$1,795.00",
-      discount: "-15%",
-      rating: "⭐⭐⭐⭐⭐",
-    },
-    {
-      id: 3,
-      name: "Ultra Thin Laptop, Intel Celeron, 4GB RAM, 320GB HDD",
-      image: "https://demo.theme-sky.com/ecomall/wp-content/uploads/2023/03/04-400x400.jpg",
-      price: "$707.00",
-      oldPrice: "$875.00",
-      discount: "-19%",
-      rating: "⭐⭐⭐⭐",
-    },
-    {
-      id: 4,
-      name: "Laptop 2 in 1 9420 Core i7, Windows 11 Pro",
-      image: "https://demo.theme-sky.com/ecomall/wp-content/uploads/2023/03/04-400x400.jpg",
-      price: "$2,851.00",
-      oldPrice: null,
-      discount: null,
-      rating: "⭐⭐⭐",
-    },
-    {
-      id: 5,
-      name: "HP 14” Convertible 2-in-1 Chromebook Laptop",
-      image: "https://demo.theme-sky.com/ecomall/wp-content/uploads/2023/03/04-400x400.jpg",
-      price: "$379.99",
-      oldPrice: null,
-      discount: "HOT",
-      rating: "⭐⭐⭐⭐",
-    },
-  ];
+  // State to hold the fetched products
+  const [products, setProducts] = useState([]);
 
-  const HandleClick = (e,product) => {
-    setProduct_cart(product);
-    dispatch(addProduct(product))
-    console.log("Prinitng and event");
+  // Fetch the product data from the backend when the component mounts
+  useEffect(() => {
+    // Replace with your actual API URL
+    fetch('http://localhost:3000/product')
+      .then((response) => response.json())
+      .then((data) => {
+        
+        console.log('Data fetched from backend:', data); // Log the fetched data
+        setProducts(data); // Update state with fetched products
+      })
+      .catch((error) => console.error('Error fetching products:', error));
+  }, []);
+
+  
+  const HandleClick = async (e, product) => {
     e.target.disabled = true;
     e.target.style.backgroundColor = "grey";
-
-    toast(<>
-      Added to cart  . <Link to="cart" className="text-blue-500 underline">Check cart</Link>
-    </>, {
-      position: "top-right",
-      autoClose: 5000,
-      hideProgressBar: false,
-      closeOnClick: false,
-      pauseOnHover: true,
-      draggable: true,
-      progress: undefined,
-      theme: "light",
+  
+    try {
+      // Send request to backend to add product to the cart
+      const response = await fetch('http://localhost:3000/user/add', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ productId: product._id, quantity: 1 }),
+        credentials:"include",
       });
   
-  }
+      const result = await response.json();
+  
+      if (response.ok) {
+        // Show success toast
+        toast(
+          <>
+            Added to cart.{' '}
+            <Link to="cart" className="text-blue-500 underline">
+              Check cart
+            </Link>
+          </>,
+          {
+            position: 'top-right',
+            autoClose: 5000,
+            hideProgressBar: false,
+            closeOnClick: false,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+            theme: 'light',
+          }
+        );
+      } else {
+        // Handle error response
+        console.error('Error adding product:', result.message);
+        toast.error(`Failed to add to cart: ${result.message}`, {
+          position: 'top-right',
+          autoClose: 5000,
+        });
+        e.target.disabled = false;
+        e.target.style.backgroundColor = '';
+      }
+    } catch (error) {
+      // Handle fetch errors
+      console.error('Error:', error);
+      toast.error('Something went wrong. Please try again later.', {
+        position: 'top-right',
+        autoClose: 5000,
+      });
+      e.target.disabled = false;
+      e.target.style.backgroundColor = '';
+    }
+  };
+  
+
   return (
     <div>
 <ToastContainer
@@ -152,10 +161,14 @@ theme="light"
             <div
               key={product.id}
               className="border rounded-lg shadow-sm p-4 hover:shadow-lg transition"
-            >
+              >
               <div className="relative">
                 <img
-                  src={product.image}
+                  src={
+                    product.image.startsWith("http")
+                      ? product.image
+                      : `http://localhost:3000/${product.image}`
+                  }
                   alt={product.name}
                   className="w-full h-40 object-cover rounded-t-md"
                 />
