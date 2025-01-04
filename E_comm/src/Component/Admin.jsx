@@ -15,23 +15,46 @@ const Admin = () => {
 
   const [imagePreview, setImagePreview] = useState(null);
 
-  const onSubmit = (data) => {
-    // Convert data to FormData for sending to the server
-    const formData = new FormData();
-    formData.append('productName', data.productName);
-    formData.append('description', data.description);
-    formData.append('price', data.price);
-    formData.append('category', data.category);
-    formData.append('brand', data.brand);
-    formData.append('stockQuantity', data.stockQuantity);
-    if (data.image) formData.append('image', data.image[0]);
-
-    // Log the form data or send to backend
-    console.log('Form Data:', data);
-    alert('Product submitted successfully!');
-    reset();
+  const onSubmit = async (data) => {
+    try {
+      // Convert data to FormData for sending to the server
+      const formData = new FormData();
+      formData.append('name', data.productName); // Ensure the key matches backend's expected field
+      formData.append('description', data.description);
+      formData.append('price', data.price);
+      formData.append('category', data.category);
+      formData.append('brand', data.brand);
+      formData.append('stockQuantity', data.stockQuantity);
+      if (data.image) formData.append('image', data.image[0]); // Add the image file
+  
+      // Send the POST request to the backend using fetch
+      const response = await fetch('http://localhost:3000/admin/add', {
+        method: 'POST',
+        headers: {
+        },
+        body: formData, // FormData automatically sets the correct `Content-Type`
+        credentials:'include',
+      });
+  
+      // Parse the JSON response
+      const result = await response.json();
+  
+      if (!response.ok) {
+        // Handle errors from the backend
+        throw new Error(result.message || 'Failed to submit the product.');
+      }
+  
+      // Handle success
+      console.log('Response:', result);
+      alert('Product submitted successfully!');
+      reset(); // Reset the form
+    } catch (error) {
+      // Handle errors
+      console.error('Error submitting product:', error.message);
+      alert(error.message);
+    }
   };
-
+  
   const handleImageChange = (e) => {
     const file = e.target.files[0];
     if (file) {

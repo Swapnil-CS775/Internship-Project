@@ -33,7 +33,13 @@ const Login = () => {
         console.log("Response from backend:", responseData); // Log the response
         toast("Login Successful", { autoClose: 2000 });
         setTimeout(() => {
-          navigate('/');
+          // Check the role and navigate accordingly
+          if (responseData.user.role === "admin") {
+            console.log("Redirected to admin page");
+          navigate("/admin"); // Redirect to admin page
+          } else {
+          navigate("/"); // Redirect to normal home page
+          }
         }, 2000);
       }
     } catch (error) {

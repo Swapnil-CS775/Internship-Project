@@ -6,12 +6,11 @@ const Update_product = () => {
     const navigator = useNavigate();
     const location = useLocation();
     const productData = location.state;
-    productData[0]['description'] = "product ka description";
-    productData[0]['category'] = "product ki category";
-    productData[0]['brand'] = "product ka brand";
-    productData[0]['stockQuantity'] = 10;
 
-    console.log("Printing an data",productData);
+    console.log("type of product data : ",typeof(productData));
+    console.log("product data is  : ",productData);
+    console.log("Id = : ",productData[0]._id);
+
     const {
         register,
         handleSubmit,
@@ -20,13 +19,34 @@ const Update_product = () => {
         reset,
     } = useForm();
 
-    const onSubmit = (data) => {
-        console.log("Updated Product Data:", data);
-        alert("Product updated successfully!");
-        reset();
-        navigator('/admin/update-delete');
+    const onSubmit = async (data) => {
+        try {
+            // Make a PUT request to the backend to update the product
+            const response = await fetch(`http://localhost:3000/admin/update/${productData[0]._id}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(data), // Send the updated data
+                credentials:'include',
+            });
+
+            if (!response.ok) {
+                throw new Error('Failed to update product');
+            }
+
+            const updatedProduct = await response.json();
+            console.log('Updated Product:', updatedProduct);
+
+            alert("Product updated successfully!");
+            navigator('/admin/update-delete'); // Redirect after successful update
+        } catch (error) {
+            console.error('Error updating product:', error);
+            alert('Failed to update product. Please try again.');
+        }
     };
 
+  
 
     
   return (
