@@ -79,7 +79,7 @@ const Cart = () => {
                       ).toFixed(2)}
                     </span>
                     <button className="bg-blue-600 px-4 py-2 m-2 rounded-lg shadow hover:bg-blue-700 text-white">
-                      <Link to = {'/cart/payment'} state={product}> Buy</Link>
+                      <Link to = {'/cart/payment'} state={[product]}> Buy</Link>
                      
                     </button>
                     <button
@@ -109,6 +109,13 @@ const Cart = () => {
             className="border border-gray-300 px-4 py-2 rounded w-full max-w-md"
           />
           <button className="px-6 py-2 bg-black text-white rounded">Apply Coupon</button>
+
+          { products.length > 1 &&
+            <button className="bg-blue-600 px-4 py-2 m-2 rounded-lg shadow hover:bg-blue-700 text-white">
+            <Link to = {'/cart/payment'} state={products}> Buy All</Link> 
+          </button>
+          }
+          
         </div>
       </div>
     </div>

@@ -15,6 +15,9 @@ import Reset from './Component/Reset'
 import Admin from './Component/Admin'
 import UpdateforAdmin from './Component/UpdateforAdmin'
 import Update_product from './Component/Update_product'
+import User_oreder from './Component/User_oreder'
+import AdminOrders from './Component/AdminOrders'
+import AdminProductView from './Component/AdminProductView'
 
 function App() {
   const router = createBrowserRouter([
@@ -66,6 +69,18 @@ function App() {
     {
       path: '/admin/update-delete/update-product',
       element : <><Navbar/><Update_product/></>
+    },
+    {
+      path : '//orders-placed',
+      element : <><Navbar/><User_oreder/></>
+    },
+    {
+      path : '/admin/orders',
+      element : <><Navbar/><AdminOrders/></>
+    },
+    {
+      path : '/admin/orders/view',
+      element : <><Navbar/><AdminProductView/></>
     }
   ])
   return (

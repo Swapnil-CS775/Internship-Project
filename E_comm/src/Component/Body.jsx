@@ -83,7 +83,7 @@ const Body = () => {
       pauseOnHover: true,
       draggable: true,
       progress: undefined,
-      theme: "light",
+      theme: "dark",
       });
   
   }
@@ -99,7 +99,7 @@ rtl={false}
 pauseOnFocusLoss
 draggable
 pauseOnHover
-theme="light"
+theme="dark"
 />
 
       <div className="bg-white py-4">
@@ -109,8 +109,8 @@ theme="light"
               key={index}
               className="flex flex-col items-center space-y-2 hover:text-blue-600 cursor-pointer"
             >
-              <span className="text-2xl">{category.icon}</span>
-              <span className="text-gray-700 font-medium">{category.name}</span>
+              <span className="text-xl sm:text-2xl">{category.icon}</span>
+              <span className="text-gray-700 w-3/12 sm:w-auto overflow-hidden md:overflow-visible sm:font-medium">{category.name}</span>
             </div>
           ))}
         </div>
@@ -118,7 +118,7 @@ theme="light"
       {/* HeroSection */}
 
       <div className="bg-blue-900 text-white py-16">
-        <div className="container mx-auto flex flex-col md:flex-row items-center px-4">
+        <div className="container mx-auto flex md:flex-row items-center px-4">
           {/* Text Content */}
           <div className="md:w-1/2 space-y-4">
             <div className="bg-red-500 text-sm font-bold px-3 py-1 inline-block uppercase">
@@ -133,11 +133,11 @@ theme="light"
           </div>
 
           {/* Image */}
-          <div className="md:w-1/2 mt-8 md:mt-0">
+          <div className="w-1/3 md:w-1/2 mt-8 md:mt-0">
             <img
               src="https://ecomall-be87.kxcdn.com/ecomall/wp-content/uploads/2023/11/slide1-iphone.png"
               alt="iPad Deal"
-              className="rounded-lg h-96 w-1/2"
+              className="rounded-lg h-96 md:w-1/2"
             />
           </div>
         </div>
@@ -147,11 +147,11 @@ theme="light"
 
       <div className="max-w-7xl mx-auto p-4">
         <h2 className="text-2xl font-semibold mb-4">Best Sellers</h2>
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+        <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
           {products.map((product) => (
             <div
               key={product.id}
-              className="border rounded-lg shadow-sm p-4 hover:shadow-lg transition"
+              className="border rounded-lg shadow-sm p-4 hover:shadow-lg transition hover:cursor-pointer"
             >
               <div className="relative">
                 <img
@@ -179,7 +179,7 @@ theme="light"
                   Add to cart
                 </button>
                 <button className="mt-4 ml-8 w-3/4 bg-blue-500 text-white py-2 rounded hover:bg-blue-700">
-                 <Link to = {'/cart/payment'} state={product}> Buy Now </Link>
+                 <Link to = {'/cart/payment'} state={[product]}> Buy Now </Link>
                 </button>
                 </div>
               </div>
