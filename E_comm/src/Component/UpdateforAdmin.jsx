@@ -24,6 +24,8 @@ const UpdateforAdmin = () => {
 
     // Handle product deletion
     const handleDelete = (product) => {
+        alert('You want to delete this product..?'); // User feedback
+        alert('Changes will be permanent'); // User feedback
         fetch(`http://localhost:3000/admin/delete/${product._id}`, {
             method: 'DELETE',
             credentials: 'include',
