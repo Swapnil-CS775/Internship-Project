@@ -10,14 +10,19 @@ const Payment = (e) => {
     const location = useLocation();
     const productData = location.state;
     console.log("Printing an product", productData);
-    const a = productData.price.replace(/[,$.]/g, '');
-    const ss = (parseInt(a)).toString();
-    console.log(ss);
-    const amount = ss;
+    const totalPrice = productData
+  .filter(product => product.price && product.id !== 404)
+  .reduce((sum, product) => {
+    const price = typeof product.price === 'string'
+  ? parseFloat(product.price.replace(/[$,]/g, ""))
+  : product.price;
+    return sum + price;
+  }, 0);
+    const amount = (totalPrice*100).toString();
     const currency = "INR";
     const receiptId = "qwsaq1";
     const HandlePayment = async () => {
-        const response = await fetch("http://localhost:5000/order" , {
+        const response = await fetch("http://localhost:5000/order", {
             method: "POST",
             body: JSON.stringify({
                 amount,
@@ -29,7 +34,7 @@ const Payment = (e) => {
             },
         });
         const order = await response.json();
-        console.log("Printing an order",order);
+        console.log("Printing an order", order);
 
         var options = {
             key: "rzp_test_0RN3OhUvJL0nLK", // Enter the Key ID generated from the Dashboard
@@ -55,14 +60,14 @@ const Payment = (e) => {
                     }
                 );
                 const jsonRes = await validateRes.json();
-                if(jsonRes.msg === "success"){
+                if (jsonRes.msg === "success") {
                     console.log("I can send an toast delete a product form the cart also");
                     toast("Order is Placed");
                     dispatch(removeProduct(productData))
                     console.log("Product to be removed : ", productData);
-                    setTimeout(()=>{navigate('/cart')},2000)
-                    
-                    
+                    setTimeout(() => { navigate('/cart') }, 2000)
+
+
                 }
             },
             prefill: {
@@ -94,19 +99,17 @@ const Payment = (e) => {
     return (
         <div>
             <ToastContainer
-            position="top-right"
-            autoClose={5000}
-            hideProgressBar={false}
-            newestOnTop={false}
-            closeOnClick={false}
-            rtl={false}
-            pauseOnFocusLoss
-            draggable
-            pauseOnHover
-            theme="light"
+                position="top-right"
+                autoClose={5000}
+                hideProgressBar={false}
+                newestOnTop={false}
+                closeOnClick={false}
+                rtl={false}
+                pauseOnFocusLoss
+                draggable
+                pauseOnHover
+                theme="light"
             />
-
-
             <div className="bg-gray-100 p-6 hover:shadow-md">
                 <h1 className="text-2xl font-bold mb-6">Checkout</h1>
 
@@ -237,16 +240,20 @@ const Payment = (e) => {
                     {/* Order Summary */}
                     <div className="bg-white p-6 rounded shadow h-fit hover:shadow-md">
                         <h2 className="text-lg font-semibold mb-4">YOUR ORDER</h2>
-                        <div className="mb-4">
+                        {productData.map((product)=>{
+                            return <div key={product.id}> 
+                            <div className="mb-4">
                             <div className="flex justify-between">
-                                <span>{productData.name}</span>
-                                <span>{productData.price}</span>
+                                <span>{product.name}</span>
+                                <span>{product.price}</span>
                             </div>
                         </div>
                         <hr className="my-4" />
+                         </div>
+                        })}
                         <div className="flex justify-between">
                             <span>Subtotal</span>
-                            <span>{productData.price}</span>
+                            <span>${totalPrice}</span>
                         </div>
                         <div className="flex justify-between">
                             <span>Shipping</span>
@@ -254,9 +261,10 @@ const Payment = (e) => {
                         </div>
                         <div className="flex justify-between font-bold mt-4">
                             <span>Total</span>
-                            <span>{productData.price}</span>
+                            <span>${totalPrice}</span>
                         </div>
                         <hr className="my-4" />
+                        
                         <div className="mt-4">
                             <input type="checkbox" className="mr-2" /> I agree with the terms and conditions
                         </div>

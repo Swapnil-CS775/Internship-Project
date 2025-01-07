@@ -41,35 +41,35 @@ const Best_deals = () => {
 
   return (
     <div className="max-w-7xl mx-auto p-4">
-      <h2 className="text-2xl font-semibold mb-4">Deal Of The Day</h2>
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+      <h2 className="text-2xl font-semibold mb-6 text-center">Deal Of The Day</h2>
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
         {categories.map((category, index) => (
           <div
             key={index}
-            className="border rounded-lg shadow-sm p-4 hover:shadow-lg transition"
+            className="flex flex-col items-center border rounded-lg shadow-sm p-4 hover:shadow-lg transition"
           >
-            <div className="flex items-center">
+            <div className="flex-shrink-0">
               <img
                 src={category.image}
                 alt={category.title}
-                className="w-20 h-20 object-cover mr-4 rounded"
+                className="w-32 h-32 object-contain rounded mb-4"
               />
-              <div>
-                <h3 className="text-lg font-bold">{category.title}</h3>
-                <ul className="mt-2 text-sm text-gray-500">
-                  {category.links.map((link, i) => (
-                    <li key={i} className="hover:text-blue-600 transition">
-                      {link}
-                    </li>
-                  ))}
-                </ul>
-                <a
-                  href="#"
-                  className="mt-2 block text-blue-600 font-semibold hover:underline"
-                >
-                  Shop More &gt;&gt;
-                </a>
-              </div>
+            </div>
+            <div className="text-center">
+              <h3 className="text-lg font-bold">{category.title}</h3>
+              <ul className="mt-2 text-sm text-gray-500 space-y-1">
+                {category.links.map((link, i) => (
+                  <li key={i} className="hover:text-blue-600 transition">
+                    {link}
+                  </li>
+                ))}
+              </ul>
+              <a
+                href="#"
+                className="mt-2 inline-block text-blue-600 font-semibold hover:underline"
+              >
+                Shop More &gt;&gt;
+              </a>
             </div>
           </div>
         ))}
