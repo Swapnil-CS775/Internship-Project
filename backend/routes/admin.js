@@ -4,9 +4,6 @@ const isAdmin=require("../middleware/isAdmin");
 const upload = require("../middleware/multerMiddleware");
 const {adminLoginController,addProduct,deleteProduct, updateProduct } = require("../controllers/admin");
 
-//Route to admin login
-router.post("/login",adminLoginController);
-
 // Protected route to add a product with image upload
 router.post("/add", isAdmin, upload.single("image"), addProduct);
 

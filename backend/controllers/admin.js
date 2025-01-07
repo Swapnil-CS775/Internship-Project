@@ -5,62 +5,63 @@ const Product = require("../models/product"); // Import the product model
 const fs = require("fs");
 const path = require("path");
 
-// Admin login controller
-const adminLoginController = async (req, res) => {
-  try {
-    // Extract email and password from request body
-    const { email, password } = req.body;
+// // Admin login controller
+// const adminLoginController = async (req, res) => {
+//   try {
+//     // Extract email and password from request body
+//     const { email, password } = req.body;
 
-    // Validate if email and password are provided
-    if (!email || !password) {
-      return res.status(400).json({ message: "Email and password are required." });
-    }
+//     // Validate if email and password are provided
+//     if (!email || !password) {
+//       return res.status(400).json({ message: "Email and password are required." });
+//     }
 
-    // Find the user by email, but only if they are an admin
-    const user = await User.findOne({ email, role: "admin" });
+//     // Find the user by email, but only if they are an admin
+//     const user = await User.findOne({ email, role: "admin" });
 
-    // Check if the user exists and if the password is correct
-    if (!user) {
-      return res.status(404).json({ message: "Admin not found." });
-    }
+//     // Check if the user exists and if the password is correct
+//     if (!user) {
+//       return res.status(404).json({ message: "Admin not found." });
+//     }
 
-    // Compare the provided password with the hashed password stored in the DB
-    const isMatch = await bcrypt.compare(password, user.password);
-    if (!isMatch) {
-      return res.status(400).json({ message: "Invalid password." });
-    }
+//     // Compare the provided password with the hashed password stored in the DB
+//     const isMatch = await bcrypt.compare(password, user.password);
+//     if (!isMatch) {
+//       return res.status(400).json({ message: "Invalid password." });
+//     }
 
-    // Generate a JWT token for the admin
-    const token = jwt.sign(
-      { id: user._id, email: user.email, firstName: user.firstName, lastName: user.lastName, role: user.role }, // Payload
-      process.env.JWT_SECRET, // Secret key from .env
-      { expiresIn: process.env.JWT_EXPIRES_IN } // Expiration time from .env
-    );
+//     // Generate a JWT token for the admin
+//     const token = jwt.sign(
+//       { id: user._id, email: user.email, firstName: user.firstName, lastName: user.lastName, role: user.role }, // Payload
+//       process.env.JWT_SECRET, // Secret key from .env
+//       { expiresIn: process.env.JWT_EXPIRES_IN } // Expiration time from .env
+//     );
 
-    // Set the JWT token in a cookie
-    res.cookie('token', token, {
-      httpOnly: true, // Prevents access to the cookie from JavaScript (mitigates XSS attacks)
-      secure: process.env.NODE_ENV === 'production', // Only set cookie over HTTPS in production
-      sameSite: 'Strict', // Helps prevent CSRF attacks
-      maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days in milliseconds
-    });
+//     // Set the JWT token in a cookie
+//     res.cookie('token', token, {
+//       httpOnly: true, // Prevents access to the cookie from JavaScript (mitigates XSS attacks)
+//       secure: process.env.NODE_ENV === 'production', // Only set cookie over HTTPS in production
+//       sameSite: 'Strict', // Helps prevent CSRF attacks
+//       maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days in milliseconds
+//     });
 
-    // Send the response confirming login success
-    res.status(200).json({
-      message: "Admin login successful.",
-      // Optionally, send some additional information like user info or role
-      user: {
-        id: user._id,
-        firstName: user.firstName,
-        lastName: user.lastName,
-        email: user.email,
-      }
-    });
-  } catch (error) {
-    console.error("Error during admin login:", error);
-    res.status(500).json({ message: "Server error. Please try again later." });
-  }
-};
+//     // Send the response confirming login success
+//     res.status(200).json({
+//       message: "Admin login successful.",
+//       // Optionally, send some additional information like user info or role
+//       user: {
+//         id: user._id,
+//         firstName: user.firstName,
+//         lastName: user.lastName,
+//         email: user.email,
+//         role: user.role, // Include the role here
+//       }
+//     });
+//   } catch (error) {
+//     console.error("Error during admin login:", error);
+//     res.status(500).json({ message: "Server error. Please try again later." });
+//   }
+// };
 
 
 
@@ -107,6 +108,7 @@ const deleteProduct = async (req, res) => {
   try {
     const productId = req.params.id; // Get product ID from URL parameter
 
+    console.log(productId);
     // Find the product by ID
     const product = await Product.findById(productId);
 
@@ -179,4 +181,4 @@ const updateProduct = async (req, res) => {
 
 
 
-module.exports = { adminLoginController,addProduct,deleteProduct, updateProduct };
+module.exports = {addProduct,deleteProduct, updateProduct };

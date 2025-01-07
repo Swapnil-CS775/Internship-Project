@@ -44,7 +44,7 @@ app.use('/admin',adminRoutes);
 app.use("/product",displayProduct);
 
 // MongoDB connection
-const url = process.env.MONGODB_URI || "mongodb://localhost:27017/ecommerce"; // Use environment variable for DB URL
+const url = process.env.MONGODB_URI || "mongodb://127.0.0.1:27017/ecommerce"; // Use environment variable for DB URL
 connectMongoDb(url);
 
 // Start the server
