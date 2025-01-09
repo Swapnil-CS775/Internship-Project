@@ -20,10 +20,16 @@ const Navbar = () => {
     setTimeout(() => { setlogInfo(!logInfo); }, 300)
 
   }
+  const scrollToFooter = () => {
+    const footerElement = document.getElementById("footer");
+    if (footerElement) {
+      footerElement.scrollIntoView({ behavior: "smooth" });
+    }
+  };
 
   return (
     <>
-      <div className="bg-white shadow-md py-4 mb-3 fixed top-0 left-0 right-0">
+      <div className="bg-white shadow-md py-4 mb-3 sticky top-0 left-0 right-0 z-10">
         <div className="container mx-auto flex justify-between items-center px-4">
           {/* Logo */}
           <div className="flex items-center space-x-2">
@@ -91,7 +97,7 @@ const Navbar = () => {
 
           {/* Right Links */}
           <div className="flex items-center space-x-6">
-            <div className="text-gray-600 sm:font-medium hidden sm:block"><Link to={"/"}> Need Help? </Link></div>
+            <div onClick={scrollToFooter} className="text-gray-600 hover:cursor-pointer sm:font-medium hidden sm:block">Need Help?</div>
             <div onBlur={() => handleLog()} tabIndex={0} onClick={() => setlogInfo((prev) => !prev)} className="text-gray-600 w-9 h-7 relative">
               <svg className='size-full hover:cursor-pointer' xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path d="M224 256A128 128 0 1 0 224 0a128 128 0 1 0 0 256zm-45.7 48C79.8 304 0 383.8 0 482.3C0 498.7 13.3 512 29.7 512l388.6 0c16.4 0 29.7-13.3 29.7-29.7C448 383.8 368.2 304 269.7 304l-91.4 0z" /></svg>
               {logInfo && <div onBlur={() => handleLog()} tabIndex={0} className='bg-white absolute mt-3 w-48 rounded-lg shadow-lg'>

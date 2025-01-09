@@ -1,10 +1,13 @@
 import React, { useState, useRef } from 'react'
 import { useDispatch } from 'react-redux';
 import { addProduct } from '../redux/product/productSlice';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { ToastContainer, toast } from 'react-toastify';
+import { useSelector } from 'react-redux';
 
 const Body = () => {
+  const currentStatus = useSelector((state) => state.auth.status);
+  const navigate = useNavigate()
   const dispatch = useDispatch()
   const btnRef = useRef()
 
@@ -66,7 +69,10 @@ const Body = () => {
     },
   ];
 
-  const HandleClick = (e,product) => {
+  const HandleClick = (e, product) => {
+    if (!currentStatus) {
+      navigate('/login');
+    }
     setProduct_cart(product);
     dispatch(addProduct(product))
     console.log("Prinitng and event");
@@ -84,23 +90,23 @@ const Body = () => {
       draggable: true,
       progress: undefined,
       theme: "dark",
-      });
-  
+    });
+
   }
   return (
     <div>
-<ToastContainer
-position="top-right"
-autoClose={5000}
-hideProgressBar={false}
-newestOnTop={false}
-closeOnClick={false}
-rtl={false}
-pauseOnFocusLoss
-draggable
-pauseOnHover
-theme="dark"
-/>
+      <ToastContainer
+        position="top-right"
+        autoClose={5000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick={false}
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="dark"
+      />
 
       <div className="bg-white py-4">
         <div className="container mx-auto flex justify-around items-center px-4">
@@ -175,12 +181,18 @@ theme="dark"
                 </div>
                 <p className="text-yellow-400 text-sm">{product.rating}</p>
                 <div className='flex justify-center items-center'>
-                <button className={`mt-4 ml-8 w-3/4 bg-blue-500 text-white py-2 rounded hover:bg-blue-700`} onClick={(e) => { HandleClick(e,product) }}>
-                  Add to cart
-                </button>
-                <button className="mt-4 ml-8 w-3/4 bg-blue-500 text-white py-2 rounded hover:bg-blue-700">
-                 <Link to = {'/cart/payment'} state={[product]}> Buy Now </Link>
-                </button>
+                  <button className={`mt-4 ml-8 w-3/4 bg-blue-500 text-white py-2 rounded hover:bg-blue-700`} onClick={(e) => { HandleClick(e, product) }}>
+                    Add to cart
+                  </button>
+                  <button className="mt-4 ml-8 w-3/4 bg-blue-500 text-white py-2 rounded hover:bg-blue-700">
+                    <Link
+                      to={currentStatus ? "/cart/payment" : "/login"}
+                      state={currentStatus ? [product] : undefined}
+                      className="text-center inline-block"
+                    >
+                      Buy Now
+                    </Link>
+                  </button>
                 </div>
               </div>
             </div>

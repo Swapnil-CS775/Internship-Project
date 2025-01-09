@@ -59,30 +59,30 @@ const Admin = () => {
         <ul className="space-y-4">
           <li>
             <button
-              className="w-1/2 text-left px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+              className="flex justify-center items-center text-sm md:text-base w-1/2 text-left md:px-4 md:py-2 p-1 bg-blue-500 text-white rounded hover:bg-blue-600"
             >
-              <Link to={'/admin'}>Add Products</Link>
+              <Link className='w-full overflow-clip text-center' to={'/admin'}>Add</Link>
             </button>
           </li>
           <li>
           <button
-              className="w-1/2 text-left px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+              className="flex justify-center items-center text-sm md:text-base w-1/2 text-left md:px-4 md:py-2 p-1 bg-blue-500 text-white rounded hover:bg-blue-600"
             >
-              <Link to={'/admin/update-delete'}>Update Products</Link>
+              <Link className='w-full overflow-clip text-center' to={'/admin/update-delete'}>Update</Link>
             </button>
           </li>
           <li>
           <button
-              className="w-1/2 text-left px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+              className="flex justify-center items-center text-sm md:text-base w-1/2 text-left md:px-4 md:py-2 p-1 bg-blue-500 text-white rounded hover:bg-blue-600"
             >
-              <Link to={'/admin/update-delete'}>Delete Products</Link>
+              <Link className='w-full overflow-clip text-center' to={'/admin/update-delete'}>Delete</Link>
             </button>
           </li>
           <li>
           <button
-              className="w-1/2 text-left px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+              className="flex justify-center items-center text-sm md:text-base w-1/2 text-left md:px-4 md:py-2 p-1 bg-blue-500 text-white rounded hover:bg-blue-600"
             >
-              <Link to={'/admin/orders'}>Check-out Orders</Link>
+              <Link className='w-full overflow-clip text-center' to={'/admin/orders'}>Orders</Link>
             </button>
           </li>
         </ul>

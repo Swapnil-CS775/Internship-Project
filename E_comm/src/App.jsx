@@ -18,6 +18,7 @@ import Update_product from './Component/Update_product'
 import User_oreder from './Component/User_oreder'
 import AdminOrders from './Component/AdminOrders'
 import AdminProductView from './Component/AdminProductView'
+import AuthLayout from './Auth/AuthLayout'
 
 function App() {
   const router = createBrowserRouter([
@@ -32,55 +33,108 @@ function App() {
     },
     {
       path:"/login",
-      element : <><Navbar/> <Login/></>
+      element : (
+        <AuthLayout authentication = {false}>
+          <Navbar/>
+           <Login/>
+        </AuthLayout>
+      )
     },
     {
       path:"/register",
-      element : <><Navbar/> <Register/></>
+      element :(
+            <AuthLayout authentication={false}>
+              <><Navbar/> <Register/></>
+            </AuthLayout>
+      ) 
     },
     {
       path : "/login/forget-password",
-      element : <><Navbar/> <Forget/></>
+      element :(
+        <AuthLayout authentication={false}>
+          <><Navbar/> <Forget/></>
+        </AuthLayout>
+  ) 
     },
     {
       path : "/cart",
-      element : <><Navbar/> <Cart/> </>
+      element : (
+        <AuthLayout authentication={true}>
+          <><Navbar/> <Cart/> </>
+        </AuthLayout>
+      )
     },
     {
       path : '/cart/payment',
-      element : <><Navbar/><Payment/></>
+      element : (
+        <AuthLayout authentication={true}>
+          <><Navbar/> <Cart/><Payment/> </>
+        </AuthLayout>
+      )
     },
     {
       path : '/login/forget-password/OTP',
-      element : <><Navbar/> <OTP/></>
+      element : (
+        <AuthLayout authentication={false}>
+          <><Navbar/> <OTP/></>
+        </AuthLayout>
+      )
     },
     {
       path : '/login/forget-password/OTP/set-password',
-      element : <><Navbar/> <Reset/></>
+      element : (
+        <AuthLayout authentication={false}> 
+        <><Navbar/> <Reset/></>
+        </AuthLayout>
+      )
     },
     {
       path : '/admin',
-      element : <><Navbar/><Admin/></>
+      element : (
+        <AuthLayout authentication={true}>
+          <><Navbar/><Admin/></>
+        </AuthLayout>
+      ) 
     },
     {
       path: '/admin/update-delete',
-      element : <><Navbar/><UpdateforAdmin/></>
+      element : (
+        <AuthLayout authentication={true}>
+          <><Navbar/><UpdateforAdmin/></>
+        </AuthLayout>
+      ) 
     },
     {
       path: '/admin/update-delete/update-product',
-      element : <><Navbar/><Update_product/></>
+      element : (
+        <AuthLayout authentication={true}>
+         <><Navbar/><Update_product/></>
+        </AuthLayout>
+      ) 
     },
     {
-      path : '//orders-placed',
-      element : <><Navbar/><User_oreder/></>
+      path : '/orders-placed',
+      element : (
+        <AuthLayout authentication={true}>
+          <><Navbar/><User_oreder/></>
+        </AuthLayout>
+      )
     },
     {
       path : '/admin/orders',
-      element : <><Navbar/><AdminOrders/></>
+      element : (
+        <AuthLayout authentication={true}>
+          <><Navbar/><AdminOrders/></>
+        </AuthLayout>
+      )
     },
     {
       path : '/admin/orders/view',
-      element : <><Navbar/><AdminProductView/></>
+      element : (
+        <AuthLayout authentication={true}>
+         <><Navbar/><AdminProductView/></>
+        </AuthLayout>
+      )
     }
   ])
   return (

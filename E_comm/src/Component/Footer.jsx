@@ -2,7 +2,7 @@ import React from 'react'
 
 const Footer = () => {
   return (
-    <footer className="bg-white py-8 border-t">
+    <footer id="footer" className="bg-white py-8 border-t">
     {/* Info Section */}
     <div className="max-w-7xl mx-auto px-4 grid grid-cols-1 md:grid-cols-4 gap-4 text-center md:text-left">
       <div className="space-y-2">
@@ -46,7 +46,7 @@ const Footer = () => {
     <hr className="my-8 mx-40 boder" />
 
     {/* Footer Links */}
-    <div className="max-w-7xl mx-auto px-4 grid grid-cols-1 md:grid-cols-4 gap-8 text-gray-700">
+    <div className="max-w-7xl mx-auto px-4 grid grid-cols-2 md:grid-cols-4 gap-8 justify-center items-center text-gray-700 w-full">
       <div className="space-y-2">
         <h3 className="font-bold text-lg">Demo_Company</h3>
         <p>Find a location nearest you. <a href="#" className="text-blue-600">Our Stores</a></p>

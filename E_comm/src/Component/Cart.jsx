@@ -5,7 +5,9 @@ import { Link } from "react-router-dom";
 
 const Cart = () => {
   const dispatch = useDispatch();
-  const products1 = useSelector((state) => state.products);
+  const products1 = useSelector((state) => state.product.products);
+
+  console.log("Printing the product from the store ", products1);
 
   // Remove duplicates using Map
   const products = Array.from(new Map(products1.map((item) => [item.id, item])).values());
@@ -50,22 +52,22 @@ const Cart = () => {
                     <img
                       src={product.image} // Replace with the actual product image URL
                       alt="Product"
-                      className="w-20"
+                      className="w-20 hidden md:block"
                     />
                     <span className="font-medium">{product.name}</span>
                   </div>
                   <span className="text-right">{product.price}</span>
-                  <div className="flex justify-end items-center space-x-2">
+                  <div className="flex justify-end items-center space-x-2 mr-6 md:mr-0">
                     <button
                       onClick={() => handleQtyChange(product.id, -1)}
-                      className="px-3 py-1 border border-gray-300 rounded"
+                      className="md:px-3 md:py-1 md:border md:border-gray-300 md:rounded"
                     >
                       -
                     </button>
-                    <span className="px-2">{quantities[product.id]}</span>
+                    <span className="md:px-2">{quantities[product.id]}</span>
                     <button
                       onClick={() => handleQtyChange(product.id, 1)}
-                      className="px-3 py-1 border border-gray-300 rounded"
+                      className="md:px-3 md:py-1 md:border md:border-gray-300 md:rounded"
                     >
                       +
                     </button>
@@ -78,10 +80,6 @@ const Cart = () => {
                         quantities[product.id]
                       ).toFixed(2)}
                     </span>
-                    <button className="bg-blue-600 px-4 py-2 m-2 rounded-lg shadow hover:bg-blue-700 text-white">
-                      <Link to = {'/cart/payment'} state={[product]}> Buy</Link>
-                     
-                    </button>
                     <button
                       onClick={() => {
                         dispatch(removeProduct(product));
