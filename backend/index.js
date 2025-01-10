@@ -12,6 +12,8 @@ const adminRoutes = require('./routes/admin');
 const displayProduct=require("./routes/displayProduct");
 const app = express();
 const path = require('path');
+const paymentRoutes=require('./routes/payment');
+const ordersRoutes=require('./routes/order');
 
 // Middleware
 app.use(cors({
@@ -20,6 +22,7 @@ app.use(cors({
 }));
 app.use(cookieParser());
 app.use(express.json()); // Use express built-in JSON parser instead of body-parser
+app.use(express.urlencoded({ extended: false }));
 app.use('/public', express.static(path.join(__dirname, 'public')));
 
 // Register Routes
@@ -42,6 +45,12 @@ app.use('/admin',adminRoutes);
 
 //Display Products
 app.use("/product",displayProduct);
+
+//Payment routes
+app.use('/payment',paymentRoutes);
+
+//Orders routes
+app.use('/order',ordersRoutes)
 
 // MongoDB connection
 const url = process.env.MONGODB_URI || "mongodb://127.0.0.1:27017/ecommerce"; // Use environment variable for DB URL

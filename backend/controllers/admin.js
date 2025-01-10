@@ -2,6 +2,7 @@ const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const User = require("../models/user");  // Import the User model
 const Product = require("../models/product"); // Import the product model
+const Order=require('../models/orders')
 const fs = require("fs");
 const path = require("path");
 
@@ -179,6 +180,31 @@ const updateProduct = async (req, res) => {
   }
 };
 
+//View all orders
+const viewOrders = async (req, res) => {
+  try {
+    // Fetch all orders from the database
+    const orders = await Order.find({});  // You may add filtering if needed
+    res.json(orders);
+  } catch (err) {
+    console.error('Error fetching orders: ', err);
+    res.status(500).json({ message: 'Server error' });
+  }
+};
 
+// Fetch a single order by ID
+const getOrderById = async (req, res) => {
+  const { id } = req.params;
+  try {
+    const order = await Order.findById(id);  // Fetch order by ID
+    if (!order) {
+      return res.status(404).json({ message: 'Order not found' });
+    }
+    res.status(200).json(order);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: 'Failed to fetch order' });
+  }
+};
 
-module.exports = {addProduct,deleteProduct, updateProduct };
+module.exports = {addProduct,deleteProduct, updateProduct,viewOrders,getOrderById};
