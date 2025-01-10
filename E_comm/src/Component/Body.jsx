@@ -1,11 +1,19 @@
-import React, { useState, useRef } from 'react'
+import React, { useState, useRef, useContext } from 'react'
 import { useDispatch } from 'react-redux';
 import { addProduct } from '../redux/product/productSlice';
 import { Link, useNavigate } from 'react-router-dom';
 import { ToastContainer, toast } from 'react-toastify';
 import { useSelector } from 'react-redux';
 
+
 const Body = () => {
+
+  //This is search feild Data from the Navbar for processing the input data from DB 
+  const Data = useSelector((state)=>state.search.searchVal);
+  const Data2 = useSelector((state)=>state.search.category);
+  console.log("Printing the data : ", Data, Data2);
+
+
   const currentStatus = useSelector((state) => state.auth.status);
   const navigate = useNavigate()
   const dispatch = useDispatch()
@@ -91,6 +99,8 @@ const Body = () => {
       progress: undefined,
       theme: "dark",
     });
+
+
 
   }
   return (

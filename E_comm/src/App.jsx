@@ -20,6 +20,7 @@ import AdminOrders from './Component/AdminOrders'
 import AdminProductView from './Component/AdminProductView'
 import AuthLayout from './Auth/AuthLayout'
 
+
 function App() {
   const router = createBrowserRouter([
     {
@@ -139,9 +140,7 @@ function App() {
   ])
   return (
     <>
-    
      <RouterProvider router = {router}/>
-
     </>
   )
 }

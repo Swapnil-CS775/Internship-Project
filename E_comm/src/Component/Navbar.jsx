@@ -1,11 +1,14 @@
-import React, { useRef, useState, useEffect } from 'react'
+import React, { useRef, useState, useEffect, useContext } from 'react'
 import { Link } from 'react-router-dom'
-
+import { addData } from '../redux/product/searchSlice';
+import { useDispatch } from 'react-redux';
 const Navbar = () => {
+
   const inpRef = useRef(null);
   const [toggle, setToggle] = useState(false);
   const [searchValue, setSearchValue] = useState('');
   const [logInfo, setlogInfo] = useState(false);
+  const [selectedCategory, setSelectedCategory] = useState("All Categories");
 
 
   const handleSuggestionClick = (value) => {
@@ -26,6 +29,13 @@ const Navbar = () => {
       footerElement.scrollIntoView({ behavior: "smooth" });
     }
   };
+  const handleCategoryChange = (event) => {
+    setSelectedCategory(event.target.value);
+  };
+  const dispatch = useDispatch();
+  dispatch(addData({searchVal : selectedCategory,
+    category : searchValue}))
+
 
   return (
     <>
@@ -38,7 +48,8 @@ const Navbar = () => {
 
           {/* Search Bar */}
           <div className="flex items-center w-1/2">
-            <select className="border w-3/12 md:w-auto border-gray-300 p-1 sm:p-2 rounded-l-lg">
+            <select value={selectedCategory}
+        onChange={handleCategoryChange} className="border w-3/12 md:w-auto border-gray-300 p-1 sm:p-2 rounded-l-lg">
               <option>All Categories</option>
               <option value="Mobile">Mobile</option>
               <option value="Laptop">Laptop</option>
