@@ -113,7 +113,7 @@ const Body = () => {
           {categories.map((category, index) => (
             <div
               key={index}
-              className="flex flex-col items-center space-y-2 hover:text-blue-600 cursor-pointer"
+              className="md:hover:scale-110 flex flex-col items-center space-y-2 hover:text-blue-600 cursor-pointer"
             >
               <span className="text-xl sm:text-2xl">{category.icon}</span>
               <span className="text-gray-700 w-3/12 sm:w-auto overflow-hidden md:overflow-visible sm:font-medium">{category.name}</span>
@@ -163,7 +163,7 @@ const Body = () => {
                 <img
                   src={product.image}
                   alt={product.name}
-                  className="w-full h-40 object-cover rounded-t-md"
+                  className="w-full hover:scale-110 h-40 object-cover rounded-t-md"
                 />
                 {product.discount && (
                   <span className="absolute top-2 left-2 bg-red-400 text-white text-xs px-2 py-1 rounded">
