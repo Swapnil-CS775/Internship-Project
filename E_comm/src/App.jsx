@@ -79,7 +79,7 @@ function App() {
       element : <><Navbar/><AdminOrders/></>
     },
     {
-      path : '/admin/orders/view',
+      path : '/admin/orders/view/:id',
       element : <><Navbar/><AdminProductView/></>
     }
   ])

@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { ToastContainer, toast } from 'react-toastify';
 import { useDispatch } from "react-redux";
@@ -8,21 +8,85 @@ const Payment = (e) => {
     const navigate = useNavigate();
     const dispatch = useDispatch();
     const location = useLocation();
-    const productData = location.state;
-    console.log("Printing an product", productData);
+    const productData = location.state || []; // Added fallback for undefined productData
+    
+     // State for user data
+     const [userData, setUserData] = useState({
+        firstName: '',
+        lastName: '',
+        email: '',
+        phone: '',
+        address: {
+            street: '',
+            city: '',
+            state: '',
+            zipCode: '',
+        },
+    });
+
+    const [loading, setLoading] = useState(true);
+
+    // Fetch user profile data from backend
+    useEffect(() => {
+        const fetchUserData = async () => {
+            try {
+                const response = await fetch('http://localhost:3000/user/', {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        },
+                    credentials:'include',
+                });
+
+                if (!response.ok) {
+                    throw new Error('Failed to fetch user data');
+                }
+
+                const data = await response.json();
+                console.log("user data=",data);
+                setUserData({
+                    firstName: data.user.firstName,
+                    lastName: data.user.lastName,
+                    email: data.user.email,
+                    phone: data.user.phone,
+                    address: data.user.address || {
+                        street: '',
+                        city: '',
+                        state: '',
+                        zipCode: '',
+                    },
+                });
+                setLoading(false);
+            } catch (error) {
+                console.error("Error fetching user data:", error);
+                toast.error("Failed to fetch user data");
+                setLoading(false);
+            }
+        };
+        fetchUserData();
+    }, []);
+
+
+    // Total price calculation considering quantity
     const totalPrice = productData
-  .filter(product => product.price && product.id !== 404)
-  .reduce((sum, product) => {
-    const price = typeof product.price === 'string'
-  ? parseFloat(product.price.replace(/[$,]/g, ""))
-  : product.price;
-    return sum + price;
-  }, 0);
-    const amount = (totalPrice*100).toString();
+        .filter(product => product.price && product.id !== 404) // If 404 filtering is needed
+        .reduce((sum, product) => {
+            const price = typeof product.price === 'string'
+                ? parseFloat(product.price.replace(/[$,]/g, ""))
+                : product.price;
+            return sum + (price * product.quantity); // considering quantity
+        }, 0);
+    
+    const shipping = 0; // Assuming free shipping, change if necessary
+    const totalAmount = totalPrice + shipping; // Total including shipping (if applicable)
+    
+    // Razorpay setup
+    const amount = (totalAmount * 100).toString(); // Converting to subunits (paise for INR)
     const currency = "INR";
     const receiptId = "qwsaq1";
+    
     const HandlePayment = async () => {
-        const response = await fetch("http://localhost:5000/order", {
+        const response = await fetch("http://localhost:3000/payment/order", {
             method: "POST",
             body: JSON.stringify({
                 amount,
@@ -50,7 +114,7 @@ const Payment = (e) => {
                 };
 
                 const validateRes = await fetch(
-                    "http://localhost:5000/order/validate",
+                    "http://localhost:3000/payment/order/validate",
                     {
                         method: "POST",
                         body: JSON.stringify(body),
@@ -61,20 +125,50 @@ const Payment = (e) => {
                 );
                 const jsonRes = await validateRes.json();
                 if (jsonRes.msg === "success") {
-                    console.log("I can send an toast delete a product form the cart also");
-                    toast("Order is Placed");
-                    dispatch(removeProduct(productData))
-                    console.log("Product to be removed : ", productData);
-                    setTimeout(() => { navigate('/cart') }, 2000)
+                    // Order creation triggered after successful payment
+                    const orderData = {
+                        shippingAddress: {
+                            firstName: userData.firstName,
+                            lastName: userData.lastName,
+                            email: userData.email,
+                            phone: userData.phone,
+                            address: userData.address,
+                        },
+                        products: productData,
+                        totalAmount,
+                        status: "Pending", // Default status for order
+                        paymentStatus: "Completed", // Payment status set to Completed after successful payment
+                    };
 
+                    console.log("data going to backend is : ",JSON.stringify(orderData));
 
+                    // Send the order data to the backend
+                    const orderResponse = await fetch('http://localhost:3000/order/create', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify(orderData),
+                        credentials:'include',
+                    });
+
+                    const orderDataResponse = await orderResponse.json();
+                    if (orderDataResponse.message === "Order created successfully!") {
+                        toast.success("Order placed successfully!");
+                        dispatch(removeProduct(productData)); // Dispatch remove action
+                        console.log("Product to be removed : ", productData);
+                        setTimeout(() => { navigate('/orders-placed') }, 2000);
+                    } else {
+                        toast.error("Failed to place order.");
+                    }
+                } else {
+                    toast.error("Payment failed. Order not placed.");
                 }
             },
             prefill: {
-                //We recommend using the prefill parameter to auto-fill customer's contact information, especially their phone number
-                name: "Web Dev Matrix", //your customer's name
+                name: "Web Dev Matrix",
                 email: "webdevmatrix@example.com",
-                contact: "9900000000", //Provide the customer's phone number for better conversion rates
+                contact: "9900000000",
             },
             notes: {
                 address: "Razorpay Corporate Office",
@@ -83,6 +177,7 @@ const Payment = (e) => {
                 color: "#3399cc",
             },
         };
+
         var rzp1 = new window.Razorpay(options);
         rzp1.on("payment.failed", function (response) {
             alert(response.error.code);
@@ -95,7 +190,8 @@ const Payment = (e) => {
         });
         rzp1.open();
         e.preventDefault();
-    }
+    };
+
     return (
         <div>
             <ToastContainer
@@ -125,6 +221,8 @@ const Payment = (e) => {
                                     <label className="block text-sm font-medium">First name *</label>
                                     <input
                                         type="text"
+                                        value={userData.firstName}
+                                        onChange={(e) => setUserData({ ...userData, firstName: e.target.value })}
                                         className="w-full border-2 border-gray-300 rounded p-2 mt-1 focus:ring-blue-500 focus:border-blue-500"
                                     />
                                 </div>
@@ -132,6 +230,8 @@ const Payment = (e) => {
                                     <label className="block text-sm font-medium">Last name *</label>
                                     <input
                                         type="text"
+                                        value={userData.lastName}
+                                        onChange={(e) => setUserData({ ...userData, lastName: e.target.value })}
                                         className=" border-2 w-full border-gray-300 rounded p-2 mt-1 focus:ring-blue-500 focus:border-blue-500"
                                     />
                                 </div>
@@ -152,8 +252,8 @@ const Payment = (e) => {
                                 <select
                                     className="border-2 w-full border-gray-300 rounded p-2 mt-1 focus:ring-blue-500 focus:border-blue-500"
                                 >
-                                    <option>Vietnam</option>
                                     <option>India</option>
+                                    <option>Vietnam</option>
                                     <option>United States</option>
                                 </select>
                             </div>
@@ -163,11 +263,15 @@ const Payment = (e) => {
                                 <label className="block text-sm font-medium">Street address *</label>
                                 <input
                                     type="text"
+                                    value={userData.address.street}
+                                    onChange={(e) => setUserData({ ...userData, address: { ...userData.address, street: e.target.value } })}
                                     placeholder="House number and street name"
                                     className="border-2 w-full border-gray-300 rounded p-2 mt-1 focus:ring-blue-500 focus:border-blue-500 mb-2"
                                 />
                                 <input
                                     type="text"
+                                    value={userData.address.state}
+                                    onChange={(e) => setUserData({ ...userData, address: { ...userData.address, state: e.target.value } })}
                                     placeholder="Apartment, suite, unit, etc. (optional)"
                                     className="border-2 w-full border-gray-300 rounded p-2 mt-1 focus:ring-blue-500 focus:border-blue-500"
                                 />
@@ -179,6 +283,8 @@ const Payment = (e) => {
                                     <label className="block text-sm font-medium">Town / City *</label>
                                     <input
                                         type="text"
+                                        value={userData.address.city}
+                                        onChange={(e) => setUserData({ ...userData, address: { ...userData.address, city: e.target.value } })}
                                         className="border-2 w-full border-gray-300 rounded p-2 mt-1 focus:ring-blue-500 focus:border-blue-500"
                                     />
                                 </div>
@@ -186,6 +292,8 @@ const Payment = (e) => {
                                     <label className="block text-sm font-medium">Postcode / ZIP *</label>
                                     <input
                                         type="text"
+                                        value={userData.address.zipCode}
+                                        onChange={(e) => setUserData({ ...userData, address: { ...userData.address, zipCode: e.target.value } })}
                                         className="border-2 w-full border-gray-300 rounded p-2 mt-1 focus:ring-blue-500 focus:border-blue-500"
                                     />
                                 </div>
@@ -197,6 +305,8 @@ const Payment = (e) => {
                                     <label className="block text-sm font-medium">Phone *</label>
                                     <input
                                         type="text"
+                                        value={userData.phone}
+                                        onChange={(e) => setUserData({ ...userData, phone: e.target.value })}
                                         className="border-2 w-full border-gray-300 rounded p-2 mt-1 focus:ring-blue-500 focus:border-blue-500"
                                     />
                                 </div>
@@ -204,35 +314,11 @@ const Payment = (e) => {
                                     <label className="block text-sm font-medium">Email address *</label>
                                     <input
                                         type="email"
+                                        value={userData.email}
+                                        onChange={(e) => setUserData({ ...userData, email: e.target.value })}
                                         className="border-2 w-full border-gray-300 rounded p-2 mt-1 focus:ring-blue-500 focus:border-blue-500"
                                     />
                                 </div>
-                            </div>
-
-                            {/* Account Information */}
-                            <div>
-                                <label className="block text-sm font-medium">Account username *</label>
-                                <input
-                                    type="text"
-                                    className="border-2 w-full border-gray-300 rounded p-2 mt-1 focus:ring-blue-500 focus:border-blue-500"
-                                />
-                            </div>
-                            <div>
-                                <label className="block text-sm font-medium">Create account password *</label>
-                                <input
-                                    type="password"
-                                    className="border-2 w-full border-gray-300 rounded p-2 mt-1 focus:ring-blue-500 focus:border-blue-500"
-                                />
-                            </div>
-
-                            {/* Order Notes */}
-                            <div>
-                                <label className="block text-sm font-medium">Order notes (optional)</label>
-                                <textarea
-                                    rows="3"
-                                    placeholder="Notes about your order, e.g. special notes for delivery."
-                                    className="border-2 w-full border-gray-300 rounded p-2 mt-1 focus:ring-blue-500 focus:border-blue-500"
-                                ></textarea>
                             </div>
                         </form>
                     </div>
@@ -240,20 +326,20 @@ const Payment = (e) => {
                     {/* Order Summary */}
                     <div className="bg-white p-6 rounded shadow h-fit hover:shadow-md">
                         <h2 className="text-lg font-semibold mb-4">YOUR ORDER</h2>
-                        {productData.map((product)=>{
-                            return <div key={product.id}> 
-                            <div className="mb-4">
-                            <div className="flex justify-between">
-                                <span>{product.name}</span>
-                                <span>{product.price}</span>
+                        {productData.map((product) => (
+                            <div key={product.id}>
+                                <div className="mb-4">
+                                    <div className="flex justify-between">
+                                        <span>{product.name} × {product.quantity}</span>
+                                        <span>{(product.price * product.quantity).toFixed(2)}</span>
+                                    </div>
+                                </div>
+                                <hr className="my-4" />
                             </div>
-                        </div>
-                        <hr className="my-4" />
-                         </div>
-                        })}
+                        ))}
                         <div className="flex justify-between">
                             <span>Subtotal</span>
-                            <span>${totalPrice}</span>
+                            <span>${totalPrice.toFixed(2)}</span>
                         </div>
                         <div className="flex justify-between">
                             <span>Shipping</span>
@@ -261,20 +347,20 @@ const Payment = (e) => {
                         </div>
                         <div className="flex justify-between font-bold mt-4">
                             <span>Total</span>
-                            <span>${totalPrice}</span>
+                            <span>${totalAmount.toFixed(2)}</span>
                         </div>
                         <hr className="my-4" />
-                        
                         <div className="mt-4">
                             <input type="checkbox" className="mr-2" /> I agree with the terms and conditions
                         </div>
-                        <div className='w-full flex justify-center items-center'><button onClick={(e) => { HandlePayment() }} className="w-1/2 bg-blue-500 text-white p-2 mt-4 rounded hover:bg-blue-600">PLACE ORDER</button></div>
-
+                        <div className='w-full flex justify-center items-center'>
+                            <button onClick={(e) => { HandlePayment(e) }} className="w-1/2 bg-blue-500 text-white p-2 mt-4 rounded hover:bg-blue-600">PLACE ORDER</button>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
-    )
-}
+    );
+};
 
-export default Payment
+export default Payment;
