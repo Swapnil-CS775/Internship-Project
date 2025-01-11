@@ -42,7 +42,6 @@ const loginController = async (req, res) => {
       JWT_SECRET, // Secret key
       { expiresIn: JWT_EXPIRES_IN } // Options
     );
-    console.log("token created successfully :",token);
     // Send the token in a cookie
     res.cookie('token', token, {
       httpOnly: true, // Prevents access to the cookie from JavaScript (mitigates XSS attacks)
@@ -50,8 +49,6 @@ const loginController = async (req, res) => {
       sameSite: 'None', // Helps prevent CSRF attacks
       maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days in milliseconds
     });
-
-    console.log("cookies send successfully");
 
     // Send success response
     res.status(200).json({
@@ -66,7 +63,6 @@ const loginController = async (req, res) => {
         role: user.role,
       },
     });
-    console.log("response send success");
   } catch (error) {
     console.error('Error during login:', error);
     res.status(500).json({ message: 'Internal server error.' });

@@ -1,5 +1,6 @@
 const Order = require('../models/orders');
 const User = require("../models/user"); // Assuming User model is in this path
+const Product=require('../models/product');
 
 // Controller for creating an order
 const createOrder = async (req, res) => {
@@ -70,5 +71,43 @@ console.log('Products:', JSON.stringify(orders[0].products, null, 2));
     }
 };
 
+const checkStock=async (req, res) => {
+    const { products } = req.body; // Array of product IDs and quantities
+    try {
+        const insufficientStock = [];
+        for (const product of products) {
+            const productData = await Product.findById(product.id);
+            if (productData.stockQuantity < product.quantity) {
+                insufficientStock.push(product.id);
+            }
+        }
+        if (insufficientStock.length > 0) {
+            return res.status(400).json({ message: "Insufficient stock", insufficientStock });
+        }
+        res.status(200).json({ message: "Stock available" });
+    } catch (error) {
+        res.status(500).json({ message: "Server error", error });
+    }
+};
 
-module.exports = { createOrder,getOrdersByUserId };
+const updateStock=async (req, res) => {
+    const { products } = req.body;
+    try {
+        for (const product of products) {
+            await Product.findByIdAndUpdate(
+                product.id,
+                { $inc: { stockQuantity: -product.quantity } },
+                { new: true }
+            );
+        }
+        // Proceed with order creation logic
+        const order = new Order(req.body);
+        await order.save();
+        res.status(200).json({ message: "Order created successfully!" });
+    } catch (error) {
+        res.status(500).json({ message: "Server error", error });
+    }
+};
+
+
+module.exports = { createOrder,getOrdersByUserId,checkStock,updateStock };

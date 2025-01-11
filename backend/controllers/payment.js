@@ -11,6 +11,8 @@ const createOrder = async (req, res) => {
       });
   
       const options = req.body;
+      // Convert amount to an integer
+      options.amount = parseInt(Number(options.amount), 10);
       const order = await razorpay.orders.create(options);
   
       if (!order) {
