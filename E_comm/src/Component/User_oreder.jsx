@@ -15,7 +15,6 @@ const User_oreder = () => {
         });
 
         const data = await response.json();
-        console.log("data is :", JSON.stringify(data));
 
         if (response.ok && Array.isArray(data) && data.length > 0) {
           setOrders(data); // Set multiple orders if available
