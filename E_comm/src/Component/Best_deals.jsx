@@ -52,7 +52,7 @@ const Best_deals = () => {
               <img
                 src={category.image}
                 alt={category.title}
-                className="w-32 h-32 object-contain rounded mb-4"
+                className="hover:scale-110 w-32 h-32 object-contain rounded mb-4"
               />
             </div>
             <div className="text-center">
