@@ -14,6 +14,7 @@ const app = express();
 const path = require('path');
 const paymentRoutes=require('./routes/payment');
 const ordersRoutes=require('./routes/order');
+const jwt = require('jsonwebtoken');
 
 // Middleware
 app.use(cors({
@@ -51,6 +52,24 @@ app.use('/payment',paymentRoutes);
 
 //Orders routes
 app.use('/order',ordersRoutes)
+
+
+//Route to verify token - 
+app.get('/verify-token', (req, res) => {
+  // Extract token from the cookie
+    const token = req.cookies.token;
+    // If token doesn't exist, return an error
+    if (!token) {
+      return res.status(401).json({ error: 'Token not found' });
+    }
+  
+    try {
+      const decoded = jwt.verify(token, process.env.JWT_SECRET);
+      res.json({ valid: true, user: decoded });
+    } catch (err) {
+      res.status(401).json({ valid: false, error: 'Invalid token' });
+    }
+});
 
 // MongoDB connection
 const url = process.env.MONGODB_URI || "mongodb://127.0.0.1:27017/ecommerce"; // Use environment variable for DB URL
