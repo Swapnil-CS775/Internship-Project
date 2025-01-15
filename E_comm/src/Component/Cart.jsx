@@ -8,9 +8,6 @@ const Cart = () => {
   const productsFromRedux = useSelector((state) => state.product.products);
 
   // console.log("Printing the product from the store ", products1);
-
-  
-
   // Local state for products
   const [products, setProducts] = useState([]);
 
@@ -34,21 +31,43 @@ const Cart = () => {
         }
 
         const data = await response.json();
-        console.log("Fetched Cart Data:", data);
+        console.log("Fetched Cart Data:", JSON.stringify(data));
 
         // Transform fetched cart items into the format expected by products
-        const fetchedProducts = data.cart.items.map((item) => ({
-          id: item.productId._id,
-          name: item.productId.name,
-          price: item.productId.price,
-          image: `http://localhost:3000/${item.productId.image}`,
-          quantity: item.quantity,
-        }));
+        const fetchedProducts = data.cart.items.map((item) => {
+          let stockStatus = "";
+
+          // Check stock quantity and set stock status accordingly
+          if (item.productId.stockQuantity === -1) {
+            stockStatus = "Product no longer available";
+          } else if (item.productId.stockQuantity === 0) {
+            stockStatus = "Out of stock";
+          } else {
+            stockStatus = item.productId.stockQuantity;
+          }
+
+          return {
+            id: item.productId._id,
+            name: item.productId.name,
+            price: item.productId.price,
+            image: `http://localhost:3000/${item.productId.image}`,
+            quantity: item.quantity,
+            stock: stockStatus, // Set the stock status here
+          };
+        });
+
+        // Log the fetched products with stock status
+        fetchedProducts.forEach((product) => {
+          console.log("Product:", product.name, "Stock:", product.stock);
+        });
 
         // Combine fetched products with Redux products
         const updatedProducts = Array.from(
           new Map(
-            [...productsFromRedux, ...fetchedProducts].map((item) => [item.id, item]) // Deduplicate by `id`
+            [...productsFromRedux, ...fetchedProducts].map((item) => [
+              item.id,
+              item,
+            ]) // Deduplicate by `id`
           ).values()
         );
 
@@ -77,14 +96,20 @@ const Cart = () => {
 
     // Update backend (assuming there's an endpoint to handle this)
     try {
-      const response = await fetch("http://localhost:3000/user/update-quantity", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ productId, action: delta === 1 ? "increase" : "decrease" }),
-        credentials: "include", // Include cookies for authentication
-      });
+      const response = await fetch(
+        "http://localhost:3000/user/update-quantity",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            productId,
+            action: delta === 1 ? "increase" : "decrease",
+          }),
+          credentials: "include", // Include cookies for authentication
+        }
+      );
 
       const data = await response.json();
 
@@ -97,7 +122,9 @@ const Cart = () => {
 
         setProducts((prevProducts) =>
           prevProducts.map((product) =>
-            product.id === productId ? { ...product, quantity: newQuantity } : product
+            product.id === productId
+              ? { ...product, quantity: newQuantity }
+              : product
           )
         );
       } else {
@@ -130,7 +157,9 @@ const Cart = () => {
       console.log("Product removed successfully:", data);
 
       // Remove the product from the `products` state after it's removed from the backend
-      setProducts((prevProducts) => prevProducts.filter((product) => product.id !== productId));
+      setProducts((prevProducts) =>
+        prevProducts.filter((product) => product.id !== productId)
+      );
 
       // Remove the product from the `quantities` state as well
       setQuantities((prevQuantities) => {
@@ -157,7 +186,9 @@ const Cart = () => {
         </div>
         <div className="border-b border-gray-300 py-4">
           {products.length === 0 && (
-            <span className="text-center font-bold block text-xl">Cart is Empty</span>
+            <span className="text-center font-bold block text-xl">
+              Cart is Empty
+            </span>
           )}
           {products.map((product) => (
             <div key={product.id}>
@@ -189,9 +220,7 @@ const Cart = () => {
                   </div>
                   <div className="flex justify-end items-center">
                     <span className="mr-4">
-                      ${(
-                        product.price * quantities[product.id]
-                      ).toFixed(2)}
+                      ${(product.price * quantities[product.id]).toFixed(2)}
                     </span>
                     <button
                       onClick={() => handleRemoveProduct(product.id)}
@@ -211,14 +240,18 @@ const Cart = () => {
             placeholder="Coupon code"
             className="border border-gray-300 px-4 py-2 rounded w-full max-w-md"
           />
-          <button className="px-6 py-2 bg-black text-white rounded">Apply Coupon</button>
-
-          { products.length > 1 &&
-            <button className="bg-blue-600 px-4 py-2 m-2 rounded-lg shadow hover:bg-blue-700 text-white">
-            <Link to="/cart/payment" state={products}> Buy All </Link>
+          <button className="px-6 py-2 bg-black text-white rounded">
+            Apply Coupon
           </button>
-          }
-          
+
+          {products.length > 1 && (
+            <button className="bg-blue-600 px-4 py-2 m-2 rounded-lg shadow hover:bg-blue-700 text-white">
+              <Link to="/cart/payment" state={products}>
+                {" "}
+                Buy All{" "}
+              </Link>
+            </button>
+          )}
         </div>
       </div>
     </div>

@@ -34,10 +34,15 @@ const Body = () => {
       .then((response) => response.json())
       .then((data) => {
         console.log("Data fetched from backend:", data); // Log the fetched data
-        setProducts(data); // Update state with fetched products
+  
+        // Filter out products with stockQuantity equal to -1
+        const filteredProducts = data.filter((product) => product.stockQuantity !== -1);
+  
+        setProducts(filteredProducts); // Update state with filtered products
       })
       .catch((error) => console.error("Error fetching products:", error));
   }, []);
+  
 
   const HandleClick = async (e, product) => {
     if (!currentStatus) {
@@ -197,7 +202,7 @@ const Body = () => {
                     </p>
                   )}
                 </div>
-                <p className="text-yellow-400 text-sm">{product.rating}</p>
+                <p className="text-green-800 font-bold">{product.stockQuantity}</p>
                 <div className="flex justify-center items-center">
                   <button
                     className={`mt-4 ml-8 w-3/4 bg-blue-500 text-white py-2 rounded hover:bg-blue-700`}
