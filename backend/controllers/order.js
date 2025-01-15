@@ -78,7 +78,7 @@ const checkStock=async (req, res) => {
         for (const product of products) {
             const productData = await Product.findById(product.id);
             if (productData.stockQuantity < product.quantity) {
-                insufficientStock.push(product.id);
+                insufficientStock.push(product.name);
             }
         }
         if (insufficientStock.length > 0) {

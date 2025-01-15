@@ -29,7 +29,7 @@ const productSchema = new mongoose.Schema({
   stockQuantity: {
     type: Number,
     required: true,
-    min: 0, // Ensures that stock can't be negative
+    min: -1, // Ensures that stock can't be negative
   },
   image: {
     type: String,

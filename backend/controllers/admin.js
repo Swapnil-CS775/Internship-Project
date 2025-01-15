@@ -104,12 +104,9 @@ const addProduct = async (req, res) => {
   }
 };
 
-// Delete product controller
 const deleteProduct = async (req, res) => {
   try {
     const productId = req.params.id; // Get product ID from URL parameter
-
-    console.log(productId);
     // Find the product by ID
     const product = await Product.findById(productId);
 
@@ -117,29 +114,18 @@ const deleteProduct = async (req, res) => {
       return res.status(404).json({ message: "Product not found." });
     }
 
-    // Get the image path from the product object
-    const imagePath = path.join(__dirname, "../", product.image);// Updated path
-    console.log("Image Path: ", imagePath); 
-
-    // Delete the image from the server
-    fs.unlink(imagePath, (err) => {
-      if (err) {
-        console.error("Error deleting image file:", err);
-        return res.status(500).json({ message: "Failed to delete image." });
-      }
-      console.log("Image deleted successfully");
-    });
-
-    // Delete the product from the database
-    await Product.findByIdAndDelete(productId);
+    // Update the stockQuantity field to -1
+    product.stockQuantity = -1;
+    await product.save();
 
     // Send success response
-    res.status(200).json({ message: "Product and image deleted successfully." });
+    res.status(200).json({ message: "Product stock quantity updated to -1 successfully." });
   } catch (error) {
-    console.error("Error deleting product:", error);
+    console.error("Error updating product stock quantity:", error);
     res.status(500).json({ message: "Server error. Please try again later." });
   }
 };
+
 
 // Update product controller
 const updateProduct = async (req, res) => {

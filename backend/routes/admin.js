@@ -9,7 +9,7 @@ router.post("/add", isAdmin, upload.single("image"), addProduct);
 
 // Route to delete a product
 // Protected route, only admin can delete a product
-router.delete("/delete/:id", isAdmin, deleteProduct);
+router.patch("/delete/:id", isAdmin, deleteProduct);
 
 // Route to update a product
 // Protected route, only admin can update a product
