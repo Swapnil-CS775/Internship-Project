@@ -38,7 +38,7 @@ const loginController = async (req, res) => {
 
     // Generate JWT
     const token = jwt.sign(
-      { id: user._id,role:user.role}, // Payload
+      { id: user._id,role:user.role,fName:user.firstName,lName:user.lastName,email:user.email}, // Payload
       JWT_SECRET, // Secret key
       { expiresIn: JWT_EXPIRES_IN } // Options
     );
