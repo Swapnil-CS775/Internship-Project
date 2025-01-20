@@ -1,6 +1,8 @@
 # Online platform for electronics shop
 
 - Project follows MVC architecture
+- back-end code exist on main branch
+- fornt-end code exist on fornt-end branch
   
 steps to execute back-end code -
 
