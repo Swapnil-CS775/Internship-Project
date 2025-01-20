@@ -12,6 +12,8 @@ const createOrder = async (req, res) => {
             totalAmount,
             status,
             paymentStatus,
+            orderId,
+            paymentId,
         } = req.body;
 
         userId=await User.findById(req.user.id);
@@ -34,6 +36,8 @@ const createOrder = async (req, res) => {
             totalAmount,
             status: status || 'Pending', // Default status
             paymentStatus: paymentStatus || 'Pending', // Default payment status
+            orderId,
+            paymentId,
             orderDate, // Store the current date as the order date
             deliveryDate, // Optional field
         });
@@ -61,8 +65,8 @@ const getOrdersByUserId = async (req, res) => {
         if (!orders || orders.length === 0) {
             return res.status(404).json({ message: 'No orders found for this user' });
         }
-        console.log('Shipping Address:', JSON.stringify(orders[0].shippingAddress, null, 2));
-console.log('Products:', JSON.stringify(orders[0].products, null, 2));
+//         console.log('Shipping Address:', JSON.stringify(orders[0].shippingAddress, null, 2));
+// console.log('Products:', JSON.stringify(orders[0].products, null, 2));
 
         return res.status(200).json(orders); // Return the orders
     } catch (error) {

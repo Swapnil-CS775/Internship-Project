@@ -40,6 +40,8 @@ const orderSchema = new mongoose.Schema({
         enum: ['Pending', 'Completed', 'Failed'], 
         default: 'Pending' 
     }, // Payment state of the order
+    orderId:{type:String,require:true},
+    paymentId:{type:String,require:true},
     orderDate: { type: Date, default: Date.now }, // Date when the order was placed
     deliveryDate: { type: Date }, // Expected or actual delivery date
 }, { timestamps: true });

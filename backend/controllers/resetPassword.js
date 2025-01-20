@@ -27,7 +27,7 @@ const sendEmail = async (email, otp) => {
   try {
     // Send the email
     await transporter.sendMail(mailOptions);
-    console.log('OTP sent successfully!');
+    // console.log('OTP sent successfully!');
   } catch (error) {
     console.error('Error sending email:', error);
   }
@@ -62,7 +62,7 @@ exports.verifyOTP = async (req, res) => {
 
     if (!user) return res.status(404).json({ message: 'User not found' });
     if (user.otp !== otp || user.otpExpiry < Date.now()) {
-      console.log("Invalid or expired OTP");
+      // console.log("Invalid or expired OTP");
       return res.status(400).json({ message: 'Invalid or expired OTP' });
     }
 
