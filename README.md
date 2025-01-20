@@ -1,5 +1,7 @@
 # Online platform for electronics shop
 
+- Project follows MVC architecture
+  
 steps to execute back-end code -
 
 1) git clone
